@@ -1,0 +1,4 @@
+{
+  "prefix": "{grey}[{red}EmptyServerMapReset{grey}] {red}➜{default}",
+  "low.player.mapchange": "Изменение на стандартную карту из-за низкого количества игроков через {red}{0} секунд{default}..."
+}
