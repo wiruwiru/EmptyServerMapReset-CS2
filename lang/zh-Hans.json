@@ -1,0 +1,4 @@
+{
+  "prefix": "{grey}[{red}空服地图重置{grey}] {red}➜{default}",
+  "low.player.mapchange": "由于玩家数量过少，将在{red}{0}秒{default}后切换至默认地图..."
+}
