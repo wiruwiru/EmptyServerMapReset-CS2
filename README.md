@@ -32,13 +32,23 @@ The `EmptyServerMapReset.json` configuration file will be automatically generate
 
 ## Example Configuration
 
-Below is an example of the `EmptyServerMapReset.json` file:
-
+Below is an example that uses an **official map** as the default:
 ```json
 {
   "DefaultMap": "de_mirage",
   "MinimumPlayers": 2,
   "SecondsAfterEmpty": 240.0,
+  "DelayBeforeMapChange": 3.0,
+  "EnableDebug": false
+}
+```
+
+You can also use **Workshop** maps by prefixing the map ID with `ws:`:
+```json
+{
+  "DefaultMap": "ws:3437809122",
+  "MinimumPlayers": 1,
+  "SecondsAfterEmpty": 120.0,
   "DelayBeforeMapChange": 3.0,
   "EnableDebug": false
 }

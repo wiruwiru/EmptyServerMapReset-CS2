@@ -10,13 +10,37 @@ namespace EmptyServerMapReset;
 public class EmptyServerMapReset : BasePlugin, IPluginConfig<BaseConfigs>
 {
 	public override string ModuleName => "EmptyServerMapReset";
-	public override string ModuleVersion => "1.0.0";
+	public override string ModuleVersion => "1.0.1";
 	public override string ModuleAuthor => "luca.uy";
 	public override string ModuleDescription => "Automatically changes map if player count is too low.";
 
 	public required BaseConfigs Config { get; set; }
 	public void OnConfigParsed(BaseConfigs config)
 	{
+		if (string.IsNullOrWhiteSpace(config.DefaultMap))
+		{
+			Utils.DebugMessage("DefaultMap configuration is empty. Setting to default 'de_mirage'.");
+			config.DefaultMap = "de_mirage";
+		}
+
+		if (config.DefaultMap.StartsWith("ws:"))
+		{
+			string workshopId = config.DefaultMap.Replace("ws:", "").Trim();
+
+			if (string.IsNullOrWhiteSpace(workshopId) || !long.TryParse(workshopId, out _))
+			{
+				Utils.DebugMessage("The provided Workshop map ID is invalid. It should follow the format 'ws:12345678', where 12345678 is a numeric ID. Setting to default 'de_mirage'.");
+				config.DefaultMap = "de_mirage";
+			}
+
+			Utils.DebugMessage($"Workshop map configured with ID: {workshopId}");
+		}
+		else if (!Server.IsMapValid(config.DefaultMap))
+		{
+			Utils.DebugMessage($"Warning: Default map '{config.DefaultMap}' doesn't appear to be valid! Setting to default 'de_mirage'.");
+			config.DefaultMap = "de_mirage";
+		}
+
 		Config = config;
 		Utils.Config = config;
 	}
@@ -53,14 +77,17 @@ public class EmptyServerMapReset : BasePlugin, IPluginConfig<BaseConfigs>
 
 					if (checkAgain.Count < Config.MinimumPlayers)
 					{
-						Utils.DebugMessage($"Player count still < {Config.MinimumPlayers}. Notifying players and changing map to '{Config.DefaultMap}' in {Config.DelayBeforeMapChange} seconds...");
+						string mapDisplayName = Config.DefaultMap.StartsWith("ws:") ? $"Workshop Map (ID: {Config.DefaultMap.Replace("ws:", "")})" : Config.DefaultMap;
 
+						Utils.DebugMessage($"Player count still < {Config.MinimumPlayers}. Notifying players and changing map to '{mapDisplayName}' in {Config.DelayBeforeMapChange} seconds...");
 						Server.PrintToChatAll($"{Localizer["prefix"]} {string.Format(Localizer["low.player.mapchange"], Config.DelayBeforeMapChange)}");
 
 						AddTimer(Config.DelayBeforeMapChange, () =>
 						{
-							Utils.DebugMessage($"Executing changelevel to '{Config.DefaultMap}'...");
-							Server.ExecuteCommand($"changelevel {Config.DefaultMap}");
+							string command = Config.DefaultMap.StartsWith("ws:") ? $"host_workshop_map {Config.DefaultMap.Replace("ws:", "")}" : $"changelevel {Config.DefaultMap}";
+
+							Utils.DebugMessage($"Executing command: {command}");
+							Server.ExecuteCommand(command);
 						});
 					}
 					else

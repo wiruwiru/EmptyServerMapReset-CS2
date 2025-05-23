@@ -12,7 +12,7 @@ public class BaseConfigs : BasePluginConfig
     public int MinimumPlayers { get; set; } = 2;
 
     [JsonPropertyName("SecondsAfterEmpty")]
-    public float SecondsAfterEmpty { get; set; } = 60.0f;
+    public float SecondsAfterEmpty { get; set; } = 120.0f;
 
     [JsonPropertyName("DelayBeforeMapChange")]
     public float DelayBeforeMapChange { get; set; } = 3.0f;
